@@ -4,11 +4,10 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class V4L2_Control():
+class V4L2_Control:
 	"""docstring for V4L2_CTL"""
 
-	def __init__(self, control_group, name, addr, type, min=-99, max=-99, step=-99, default=-99, value=-99,
-				 flags="none", access="local", device="/dev/video0"):
+	def __init__(self, control_group, name, addr, type, min=-99, max=-99, step=-99, default=-99, value=-99, flags="none", access="local", device="/dev/video0"):
 		super(V4L2_Control, self).__init__()
 		self.control_group = control_group
 
@@ -81,7 +80,8 @@ class V4L2_CTL():
 	def _list_controls(self):
 		controls = []
 		logger.info("Executing: " + ' '.join(['v4l2-ctl', '-d', self.device, '-l']))
-		output = subprocess.check_output(['v4l2-ctl', '-d', self.device, '-l']).decode("utf-8")  # TODO: Check if the output is valid
+		output = subprocess.check_output(['v4l2-ctl', '-d', self.device, '-l']).decode(
+			"utf-8")  # TODO: Check if the output is valid
 		raw_ctrls = [x for x in output.split('\n') if x]  # TODO: Same
 
 		last_control_group = "unknown"

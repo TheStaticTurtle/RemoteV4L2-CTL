@@ -1,21 +1,25 @@
-from remote_v4l2ctl import utils
-import logging 
+import remote_v4l2ctl
+import logging
 import time
 
-logging.basicConfig(format='[%(asctime)s] [%(name)s]  [%(levelname)s] %(message)s',level=logging.DEBUG )
+logging.basicConfig(format='[%(asctime)s] [%(name)s]  [%(levelname)s] %(message)s', level=logging.DEBUG)
 logging.warning('This is a Warning')
 
-interpreter = utils.V4L2_CTL()
+# interpreter = remote_v4l2ctl.utils.V4L2_CTL()
 
-for i in interpreter.controls:
-    print(i)
+# for i in interpreter.controls:
+# 	print(i)
 
-#while True:
+# while True:
 #	for i in range(40,60):
 #		interpreter.set_brightness(i)
 #		time.sleep(.1)
-while True:
-	for i in range(0,10):
-		interpreter.set_color_effects(i)
-		time.sleep(1)
-#print(interpreter.list_controls())
+# while True:
+# 	for i in range(0, 10):
+# 		interpreter.set_color_effects(i)
+# 		time.sleep(1)
+# print(interpreter.list_controls())
+
+
+server = remote_v4l2ctl.server.ControlServer()
+server.run()
