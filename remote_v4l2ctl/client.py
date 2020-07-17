@@ -19,13 +19,13 @@ class ControlClient:
 	def _wait_for_data(self,size):
 		data = ""
 		while not data:
-			data = self.socket.recv(2048)
+			data = self.socket.recv(8162)
 		return data
 
 	def get_capabilities(self):
 		if self.socket is not None:
 			self.socket.send(b"get_capabilities")
-			caps = self._wait_for_data(4096)
+			caps = self._wait_for_data(8162)
 			print(caps)
 
 	def connect(self):
