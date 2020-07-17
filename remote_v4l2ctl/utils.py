@@ -53,6 +53,20 @@ class V4L2_Control:
 			if server is None:
 				pass
 
+	def __dict__(self):
+		return {
+			"control_group": self.control_group,
+			"name": self.name,
+			"addr": self.addr,
+			"type": self.type,
+			"min": self.min,
+			"max": self.max,
+			"step": self.step,
+			"default": self.default,
+			"value": self.value,
+			"flags": self.flags,
+		}
+
 	def __repr__(self):
 		return str(self)
 

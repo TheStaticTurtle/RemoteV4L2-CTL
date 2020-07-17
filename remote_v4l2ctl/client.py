@@ -25,7 +25,7 @@ class ControlClient:
 	def get_capabilities(self):
 		if self.socket is not None:
 			self.socket.send(b"get_capabilities")
-			caps = self._wait_for_data(2048)
+			caps = self._wait_for_data(4096)
 			print(caps)
 
 	def connect(self):
