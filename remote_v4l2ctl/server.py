@@ -38,7 +38,8 @@ class ControlServer:
 				if data:
 					print(data)
 					if data == b'get_capabilities':
-						self.client_socket.write("ABCD")
+						cap = self.driver.get_capbilities_as_json()
+						self.client_socket.send(bytearray(cap))
 
 	def accept_connexion(self, client_socket, address):
 		clt = ControlServer.RemoteClient(

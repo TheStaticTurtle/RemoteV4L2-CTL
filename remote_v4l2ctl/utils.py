@@ -1,3 +1,4 @@
+import json
 import subprocess
 import logging
 
@@ -76,6 +77,9 @@ class V4L2_CTL():
 
 		for control in self.controls:
 			setattr(self, "set_" + control.name, control.change_value)
+
+	def get_capbilities_as_json(self):
+		return json.dumps([x.__dict__ for x in self.controls])
 
 	def _list_controls(self):
 		controls = []
