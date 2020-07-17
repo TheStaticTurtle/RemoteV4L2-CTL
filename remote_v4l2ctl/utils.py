@@ -38,7 +38,7 @@ class V4L2_Control():
 				logger.error("change_value: Value too big")
 				return -1
 
-			if self.step != 99 and value % self.step != 0:
+			if self.step != -99 and value % self.step != 0:
 				logger.error("change_value: Invalid step number (Steps per "+str(self.step)+")")
 				return -1
 			

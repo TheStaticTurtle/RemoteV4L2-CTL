@@ -10,8 +10,12 @@ interpreter = utils.V4L2_CTL()
 for i in interpreter.controls:
     print(i)
 
+#while True:
+#	for i in range(40,60):
+#		interpreter.set_brightness(i)
+#		time.sleep(.1)
 while True:
-	for i in range(40,60):
-		interpreter.set_brightness(i)
-		time.sleep(.1)
+	for i in range(0,10):
+		interpreter.set_color_effects(i)
+		time.sleep(1)
 #print(interpreter.list_controls())
