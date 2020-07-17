@@ -36,8 +36,8 @@ class ControlServer:
 				time.sleep(.05)
 				data = self.client_socket.recv(1024)
 				if data:
+					print(data)
 					if data == "get_capabilities":
-						print("recv")
 						self.client_socket.write("ABCD")
 
 	def accept_connexion(self, client_socket, address):

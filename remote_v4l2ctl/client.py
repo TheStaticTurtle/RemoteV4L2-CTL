@@ -19,7 +19,7 @@ class ControlClient:
 
 	def get_capabilities(self):
 		if self.socket is not None:
-			self.socket.write("get_capabilities")
+			self.socket.send(b"get_capabilities")
 
 	def connect(self):
 		if self.socket is None:
@@ -28,7 +28,9 @@ class ControlClient:
 				self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 				self.socket.connect((self.host, self.port))
 				logger.info("Connected.")
+				return True
 			except Exception as e:
 				logger.error("Failed to connect: "+str(e))
 		else:
 			logger.warning("Trying to connect while already connected")
+		return False
