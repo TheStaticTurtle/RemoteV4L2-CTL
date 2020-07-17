@@ -53,7 +53,7 @@ class V4L2_Control:
 			if server is None:
 				pass
 
-	def __dict__(self):
+	def asdict(self):
 		return {
 			"control_group": self.control_group,
 			"name": self.name,
@@ -64,7 +64,7 @@ class V4L2_Control:
 			"step": self.step,
 			"default": self.default,
 			"value": self.value,
-			"flags": self.flags,
+			"flags": self.flags
 		}
 
 	def __repr__(self):
@@ -93,7 +93,7 @@ class V4L2_CTL():
 			setattr(self, "set_" + control.name, control.change_value)
 
 	def get_capbilities_as_json(self):
-		return json.dumps([x.__dict__ for x in self.controls])
+		return json.dumps([x.asdict() for x in self.controls])
 
 	def _list_controls(self):
 		controls = []
