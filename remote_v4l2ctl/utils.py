@@ -37,11 +37,11 @@ class V4L2_Control:
 			logger.error("change_value: Invalid input -> " + str(e))
 			return -1
 
-		if value < self.min:
+		if self.step != -99 and value < self.min:
 			logger.error("change_value: Value too little")
 			return -1
 
-		if value > self.max:
+		if self.step != -99 and value > self.max:
 			logger.error("change_value: Value too big")
 			return -1
 
