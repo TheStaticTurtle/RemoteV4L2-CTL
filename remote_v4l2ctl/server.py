@@ -38,7 +38,7 @@ class ControlServer:
 			flags="none",
 			callback = callback
 		))
-		setattr(self, "set_" + name, self.driver.controls[-1].change_value)
+		setattr(self.driver, "set_" + name, self.driver.controls[-1].change_value)
 		logger.debug("Added new control parameter" + str(self.driver.controls[-1]))
 		self.driver.update_capabilities()
 
