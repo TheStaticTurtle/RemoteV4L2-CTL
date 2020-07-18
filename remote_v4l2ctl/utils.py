@@ -54,6 +54,7 @@ class V4L2_Control:
 				"Executing: " + ' '.join(['v4l2-ctl', '-d', self.device, '--set-ctrl=' + self.name + '=' + str(value)]))
 			try:
 				subprocess.check_output(['v4l2-ctl', '-d', self.device, '--set-ctrl=' + self.name + '=' + str(value)]).decode("utf-8")
+				self.value = value
 				return 0
 			except subprocess.CalledProcessError as e:
 				logger.error(
@@ -64,7 +65,9 @@ class V4L2_Control:
 				return -1
 		elif self.access == "remote" and self.server is not None:
 			logger.info("Sending remote command: " + self.name + '=' + str(value))
-			return self.server.send_value_set(self.name, value)
+			r = self.server.send_value_set(self.name, value)
+			self.value = value
+			return r
 
 	def asdict(self):
 		return {
