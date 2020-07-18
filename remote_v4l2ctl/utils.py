@@ -25,33 +25,38 @@ class V4L2_Control:
 		self.access = access
 		self.device = device
 
-	def change_value(self, value, server=None):
+		self.server = None
+
+	def setServer(self, server):
+		self.server = server
+
+	def change_value(self, value):
+		try:
+			value = int(value)
+		except Exception as e:
+			logger.error("change_value: Invalid input -> " + str(e))
+			return -1
+
+		if value < self.min:
+			logger.error("change_value: Value too little")
+			return -1
+
+		if value > self.max:
+			logger.error("change_value: Value too big")
+			return -1
+
+		if self.step != -99 and value % self.step != 0:
+			logger.error("change_value: Invalid step number (Steps per " + str(self.step) + ")")
+			return -1
+
 		if self.access == "local":
-			try:
-				value = int(value)
-			except Exception as e:
-				logger.error("change_value: Invalid input -> " + str(e))
-				return -1
-
-			if value < self.min:
-				logger.error("change_value: Value too little")
-				return -1
-
-			if value > self.max:
-				logger.error("change_value: Value too big")
-				return -1
-
-			if self.step != -99 and value % self.step != 0:
-				logger.error("change_value: Invalid step number (Steps per " + str(self.step) + ")")
-				return -1
-
 			logger.info(
 				"Executing: " + ' '.join(['v4l2-ctl', '-d', self.device, '--set-ctrl=' + self.name + '=' + str(value)]))
 			subprocess.check_output(
 				['v4l2-ctl', '-d', self.device, '--set-ctrl=' + self.name + '=' + str(value)]).decode("utf-8")
-		else:
-			if server is None:
-				pass
+		elif self.access == "remote" and self.server is not None:
+			logger.info("Sending remote command: " + self.name + '=' + str(value))
+			return self.server.send_value_set(self.name, value)
 
 	def asdict(self):
 		return {
@@ -66,10 +71,8 @@ class V4L2_Control:
 			"value": self.value,
 			"flags": self.flags
 		}
-
 	def __repr__(self):
 		return str(self)
-
 	def __str__(self):
 		out = "V4L2_Control() -> " + self.name + " " + self.addr + " (" + self.type + ")  :  "
 		out += "min=" + str(self.min) + " " if self.min != -99 else ""
@@ -81,6 +84,38 @@ class V4L2_Control:
 		return out
 
 
+class V4L2_CTL_Remote():
+	"""docstring for V4L2_CTL_Remote"""
+
+	def __init__(self):
+		super(V4L2_CTL_Remote, self).__init__()
+		self.controls = []
+
+	def load_controls(self, data):
+		self.controls = []
+
+		for c in data:
+			ctrlr = V4L2_Control(
+				c["control_group"],
+				c["name"],
+				c["addr"],
+				c["type"],
+				min=c["min"],
+				max=c["max"],
+				step=c["step"],
+				default=c["default"],
+				value=c["value"],
+				flags=c["flags"],
+				access="remote",
+				device="remote"
+			)
+
+			logger.debug("Added new control parameter" + str(ctrlr))
+			self.controls.append(ctrlr)
+
+		logger.info("Done searching for controls. " + str(len(self.controls)) + " found.")
+
+
 class V4L2_CTL():
 	"""docstring for V4L2_CTL"""
 
@@ -88,12 +123,16 @@ class V4L2_CTL():
 		super(V4L2_CTL, self).__init__()
 		self.device = device
 		self.controls = self._list_controls()
+		self.capabilities = [x.name for x in self.controls]
 
 		for control in self.controls:
 			setattr(self, "set_" + control.name, control.change_value)
 
 	def get_capbilities_as_json(self):
 		return json.dumps([x.asdict() for x in self.controls])
+
+	def has_capability(self,what):
+		return what in self.capabilities
 
 	def _list_controls(self):
 		controls = []

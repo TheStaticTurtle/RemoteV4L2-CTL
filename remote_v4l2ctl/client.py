@@ -1,5 +1,7 @@
+import json
 import logging
 import socket
+from . import utils
 
 logger = logging.getLogger(__name__)
 
@@ -13,20 +15,32 @@ class ControlClient:
 		self.port = port
 		self.socket = None
 
+		self.remote_driver = utils.V4L2_CTL_Remote()
 		if self.connect():
-			self.get_capabilities()
+			self.load_utils()
 
-	def _wait_for_data(self,size):
+	def _wait_for_data(self, size):
 		data = ""
 		while not data:
 			data = self.socket.recv(8162)
 		return data
 
-	def get_capabilities(self):
+	def send_value_set(self, what, value):
+		if self.socket is not None:
+			self.socket.send(bytearray("value_set="+what+"="+str(value),"utf-8"))
+			resp = self._wait_for_data(1024)
+			return 0 if resp == "OK" else -1
+		return -1
+
+	def load_utils(self):
 		if self.socket is not None:
 			self.socket.send(b"get_capabilities")
 			caps = self._wait_for_data(8162)
-			print(caps)
+			self.remote_driver.load_controls(json.loads(caps))
+
+			for control in self.remote_driver.controls:
+				control.setServer(self)
+				setattr(self, "set_" + control.name, control.change_value )
 
 	def connect(self):
 		if self.socket is None:
@@ -37,7 +51,7 @@ class ControlClient:
 				logger.info("Connected.")
 				return True
 			except Exception as e:
-				logger.error("Failed to connect: "+str(e))
+				logger.error("Failed to connect: " + str(e))
 		else:
 			logger.warning("Trying to connect while already connected")
 		return False

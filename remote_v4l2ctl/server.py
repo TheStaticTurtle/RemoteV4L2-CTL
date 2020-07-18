@@ -39,7 +39,13 @@ class ControlServer:
 					print(data)
 					if data == b'get_capabilities':
 						cap = self.driver.get_capbilities_as_json()
-						self.client_socket.send(bytearray(cap,'utf-8'))
+						self.client_socket.send(bytearray(cap, 'utf-8'))
+					if b'value_set' in data:
+						_, what, value = data.decode("utf-8").split("=")
+						if self.driver.has_capability(what):
+							fn = eval("self.driver.set_"+what)
+							resp = "OK" if fn(value) else "-1"
+							self.client_socket.send(bytearray(resp, 'utf-8'))
 
 	def accept_connexion(self, client_socket, address):
 		clt = ControlServer.RemoteClient(
