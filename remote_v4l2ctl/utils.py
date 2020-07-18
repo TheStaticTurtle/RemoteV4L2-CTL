@@ -140,13 +140,17 @@ class V4L2_CTL():
 		super(V4L2_CTL, self).__init__()
 		self.device = device
 		self.controls = self._list_controls()
-		self.capabilities = [x.name for x in self.controls]
+		self.capabilities = []
+		self.update_capabilities()
 
 		for control in self.controls:
 			setattr(self, "set_" + control.name, control.change_value)
 
 	def get_capbilities_as_json(self):
 		return json.dumps([x.asdict() for x in self.controls])
+
+	def update_capabilities(self):
+		self.capabilities = [x.name for x in self.controls]
 
 	def has_capability(self,what):
 		return what in self.capabilities

@@ -39,6 +39,8 @@ class ControlServer:
 			callback = callback
 		))
 		setattr(self, "set_" + name, self.driver.controls[-1].change_value)
+		logger.debug("Added new control parameter" + str(self.driver.controls[-1]))
+		self.driver.update_capabilities()
 
 	class RemoteClient(Thread):
 		def __init__(self, client_socket, address, driver):
