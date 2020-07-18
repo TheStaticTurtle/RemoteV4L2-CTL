@@ -33,8 +33,8 @@ class ControlClient:
 		if self.socket is not None:
 			self.socket.send(bytearray("value_set="+what+"="+str(value),"utf-8"))
 			logger.info("Sending \"value_set="+what+"="+str(value)+"\" to remote server")
-			resp = self._wait_for_data(1024).decode("utf-8")
-			if resp == "OK":
+			resp = int(self._wait_for_data(1024).decode("utf-8"))
+			if resp == 0:
 				logger.debug("Command executed successfully")
 				return 0
 			else:

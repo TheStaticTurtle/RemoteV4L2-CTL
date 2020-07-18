@@ -7,4 +7,7 @@ logging.warning('This is a Warning')
 
 client = remote_v4l2ctl.client.ControlClient(host="192.168.2.50")
 
-client.set_brightness(80)
+while True:
+	for i in range(25,75):
+		client.set_brightness(i)
+		time.sleep(0.05)
