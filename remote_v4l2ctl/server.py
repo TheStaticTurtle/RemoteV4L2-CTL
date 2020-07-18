@@ -24,6 +24,22 @@ class ControlServer:
 		self.driver = utils.V4L2_CTL()
 		self.remote_clients = []
 
+	def register_external_int_command(self, callback,name, min=0, max=100):
+		self.driver.controls.append(utils.V4L2_Control(
+			"user",
+			name,
+			"0x0",
+			"custom",
+			min=min,
+			max=max,
+			step=-99,
+			default=0,
+			value=0,
+			flags="none",
+			callback = callback
+		))
+		setattr(self, "set_" + name, self.driver.controls[-1].change_value)
+
 	class RemoteClient(Thread):
 		def __init__(self, client_socket, address, driver):
 			Thread.__init__(self)

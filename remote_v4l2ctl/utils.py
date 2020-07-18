@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 class V4L2_Control:
 	"""docstring for V4L2_CTL"""
 
-	def __init__(self, control_group, name, addr, type, min=-99, max=-99, step=-99, default=-99, value=-99, flags="none", access="local", device="/dev/video0"):
+	def __init__(self, control_group, name, addr, type, min=-99, max=-99, step=-99, default=-99, value=-99, flags="none", access="local", device="/dev/video0", callback=None):
 		super(V4L2_Control, self).__init__()
 		self.control_group = control_group
 
@@ -24,8 +24,10 @@ class V4L2_Control:
 
 		self.access = access
 		self.device = device
+		self.callback = callback
 
 		self.server = None
+
 
 	def setServer(self, server):
 		self.server = server
@@ -48,6 +50,10 @@ class V4L2_Control:
 		if self.step != -99 and value % self.step != 0:
 			logger.error("change_value: Invalid step number (Steps per " + str(self.step) + ")")
 			return -1
+
+		if self.type == "custom":
+			if self.callback is not None:
+				return self.callback(value)
 
 		if self.access == "local":
 			logger.info(

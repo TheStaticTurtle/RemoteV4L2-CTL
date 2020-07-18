@@ -20,6 +20,10 @@ logging.warning('This is a Warning')
 # 		time.sleep(1)
 # print(interpreter.list_controls())
 
+def callbackA(value):
+	print("callbackA: "+str(value))
+	return 0
 
 server = remote_v4l2ctl.server.ControlServer()
+server.register_external_int_command(callbackA, "callbackAtest", min=0, max=1024)
 server.run()
