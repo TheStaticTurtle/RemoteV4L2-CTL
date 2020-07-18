@@ -52,8 +52,16 @@ class V4L2_Control:
 		if self.access == "local":
 			logger.info(
 				"Executing: " + ' '.join(['v4l2-ctl', '-d', self.device, '--set-ctrl=' + self.name + '=' + str(value)]))
-			subprocess.check_output(
-				['v4l2-ctl', '-d', self.device, '--set-ctrl=' + self.name + '=' + str(value)]).decode("utf-8")
+			try:
+				subprocess.check_output(['v4l2-ctl', '-d', self.device, '--set-ctrl=' + self.name + '=' + str(value)]).decode("utf-8")
+				return 0
+			except subprocess.CalledProcessError as e:
+				logger.error(
+					"Failed to execute command" +
+					' '.join(['v4l2-ctl', '-d', self.device, '--set-ctrl=' + self.name + '=' + str(value)]) +
+					" -> "+str(e)
+				)
+				return -1
 		elif self.access == "remote" and self.server is not None:
 			logger.info("Sending remote command: " + self.name + '=' + str(value))
 			return self.server.send_value_set(self.name, value)
