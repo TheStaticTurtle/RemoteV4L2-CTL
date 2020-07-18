@@ -44,7 +44,7 @@ class ControlServer:
 						_, what, value = data.decode("utf-8").split("=")
 						if self.driver.has_capability(what):
 							fn = eval("self.driver.set_"+what)
-							resp = "OK" if fn(value) else "-1"
+							resp = str(fn(value))
 							self.client_socket.send(bytearray(resp, 'utf-8'))
 
 	def accept_connexion(self, client_socket, address):
